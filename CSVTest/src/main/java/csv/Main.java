@@ -10,31 +10,28 @@ import java.util.UUID;
 
 public class Main {
 
-    public static String createFile() throws IOException {
-        String id = UUID.randomUUID().toString() + ".csv";
-        File file = new File(id);
-        CSVWriter writer = new CSVWriter(new FileWriter(id, file.exists()));
-        writer.close();
-        return id;
+    public static String getRandomName() {
+        return UUID.randomUUID().toString() + ".csv";
     }
 
-    public static String createFile(String... data) throws IOException {
-        String id = UUID.randomUUID().toString() + ".csv";
-        File file = new File(id);
-        CSVWriter writer = new CSVWriter(new FileWriter(id, file.exists()));
-        writer.writeNext(data);
-        writer.close();
-        return id;
+    public static String createFile(String filename) throws IOException {
+        return writeLineCSV(filename);
     }
 
+    public static String writeLineCSV(String filename, String... data) throws IOException {
+        File file = new File(filename);
+        CSVWriter writer = new CSVWriter(new FileWriter(filename, file.exists()));
+        if (data != null) writer.writeNext(data);
+        writer.close();
+        return filename;
+    }
 
-    public static String[] readCSV(String filename) throws Exception {
+    public static String[] readFirstLineCSV(String filename) throws Exception {
         CSVReader reader = new CSVReader(new FileReader(filename), ',');
         List<String[]> allRows = reader.readAll();
-        for (String[] row : allRows) {
-            System.out.println(Arrays.toString(row));
-        }
         reader.close();
+        if (allRows.get(0).length == 0 || allRows.get(0)[0] == null || allRows.get(0)[0].isEmpty())
+            throw new IndexOutOfBoundsException("В первой строке файла нет значения!");
         return allRows.get(0);
     }
 
@@ -47,6 +44,4 @@ public class Main {
         writer.writeAll(allRows);
         writer.close();
     }
-
-
 }
